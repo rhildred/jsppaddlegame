@@ -1,0 +1,61 @@
+<!Doctype html>
+<html>
+<head>
+<!-- for playing on openshift -->
+<title>Paddle Game</title>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script type="text/javascript" src="www/js/jquery.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script src="www/js/processing-1.4.1.min.js"></script>
+
+</head>
+<body>
+<h1>Paddle Game</h1>
+<p>high score: <span id="name"></span>: <span id="currenthighscore"></span></p>
+<p>score <span id="score">0</span></p>
+<canvas id="canvasMain" data-processing-sources="www/js/ballGame.pde" >
+</canvas>
+<div id="dialog-form" title="Claim High Score">
+	<form>
+	<fieldset>
+		<p>Congratulations your score was <span id="highscore"></span>!</p>
+		<label for="nameHigh">Name</label>
+		<input type="text" name="nameHigh" id="nameHigh" class="text ui-widget-content ui-corner-all" />
+	</fieldset>
+	</form>
+</div>
+</body>
+<script>
+jQuery( "#dialog-form" ).dialog({
+	autoOpen: false,
+	height: 250,
+	width: 380,
+	modal: true,
+	buttons: {
+		"Claim High Score": function() {
+			var oData = {
+					name : jQuery("#nameHigh").val(),
+					score : jQuery("#highscore").html()
+					};
+
+			jQuery.post('currentHighScore.jsp', oData, function(data) {
+				jQuery("#name").html(data.name);
+				jQuery("#currenthighscore").html(data.score);
+			}, 'json');
+			jQuery("#score").html(0);
+			$( this ).dialog( "close" );
+		},
+		Cancel: function() {
+			$( this ).dialog( "close" );
+			jQuery("#score").html(0);
+		}
+	},
+	position: [10, 20]
+});
+
+jQuery.getJSON('currentHighScore.jsp', function(data) {
+	jQuery("#name").html(data.name);
+	jQuery("#currenthighscore").html(data.score);
+});
+</script>
+</html>
